@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Asset Management System</title>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+:root {
+  /* PROFESSIONAL CORPORATE PALETTE */
+  --primary: #1e3a5f;
+  --primary-dark: #152a45;
+  --primary-light: #2c5282;
+  --primary-hover: #2a4a72;
+
+  --accent: #0d6efd;
+  --accent-hover: #0b5ed7;
+
+  --success: #198754;
+  --success-bg: #d1e7dd;
+  --warning: #fd7e14;
+  --warning-bg: #fff3cd;
+  --danger: #dc3545;
+  --danger-bg: #f8d7da;
+  --info: #0dcaf0;
+  --info-bg: #cff4fc;
+
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  --bg-body: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-header: #1e3a5f;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px -1px rgba(15, 23, 42, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -2px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
+}
+
+html, body {
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==================== HEADER ==================== */
+.header {
+  background: var(--primary);
+  border-bottom: 3px solid var(--accent);
+  padding: 0 32px;
+  height: 68px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-md);
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+}
+.title-block h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+.title-block p {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(25, 135, 84, 0.15);
+  border: 1px solid rgba(25, 135, 84, 0.4);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6ee7b7;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* ==================== TOOLBAR ==================== */
+.toolbar {
+  background: var(--bg-card);
+  padding: 14px 32px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: #ffffff;
+  color: var(--text-primary);
+  font-family: inherit;
+  line-height: 1;
+  white-space: nowrap;
+}
+.btn:hover {
+  background: var(--slate-50);
+  border-color: var(--slate-400);
+}
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-success {
+  background: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
+}
+.btn-success:hover {
+  background: #157347;
+  border-color: #157347;
+}
+
+.btn-danger {
+  background: #ffffff;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.btn-danger:hover {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+/* SEARCH */
+.search-wrap {
+  margin-left: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-wrap svg {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.search-wrap input {
+  background: #ffffff;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 9px 14px 9px 38px;
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  width: 280px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.search-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+}
+.search-wrap input::placeholder { color: var(--text-muted); }
+
+/* ==================== MAIN LAYOUT ==================== */
+.main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 16px;
+  padding: 20px 32px;
+  min-height: 0;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==================== TABLE ==================== */
+.table-wrap {
+  flex: 1;
+  overflow: auto;
+  border-radius: 8px 8px 0 0;
+}
+.table-wrap::-webkit-scrollbar { width: 10px; height: 10px; }
+.table-wrap::-webkit-scrollbar-track { background: var(--slate-100); }
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--slate-300);
+  border-radius: 5px;
+  border: 2px solid var(--slate-100);
+}
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--slate-400); }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { position: sticky; top: 0; z-index: 10; }
+thead th {
+  background: var(--slate-800);
+  color: #ffffff;
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--primary);
+  position: relative;
+}
+thead th::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+thead th:last-child::after { display: none; }
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+  background: #ffffff;
+}
+tbody tr:hover { background: var(--slate-50); }
+tbody tr.selected {
+  background: rgba(13, 110, 253, 0.08);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+tbody tr:nth-child(even):not(:hover):not(.selected) {
+  background: #fafbfc;
+}
+tbody td {
+  padding: 12px 14px;
+  white-space: nowrap;
+  color: var(--text-primary);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+tbody td:first-child { color: var(--text-muted); font-weight: 500; }
+tbody td b { color: var(--primary); font-weight: 700; }
+
+/* STATUS ROW LEFT BORDER */
+tr.status-working { box-shadow: inset 3px 0 0 #10b981; }
+tr.status-notworking { box-shadow: inset 3px 0 0 #ef4444; }
+tr.status-repair { box-shadow: inset 3px 0 0 #f59e0b; }
+tr.status-retired { box-shadow: inset 3px 0 0 #3b82f6; }
+tr.status-disposed { box-shadow: inset 3px 0 0 #64748b; }
+tr.status-working.selected,
+tr.status-notworking.selected,
+tr.status-repair.selected,
+tr.status-retired.selected,
+tr.status-disposed.selected {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+/* STATUS BADGE */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-working {
+  background: var(--success-bg);
+  color: #0f5132;
+  border-color: rgba(25, 135, 84, 0.3);
+}
+.status-working::before { background: #10b981; }
+.status-notworking {
+  background: var(--danger-bg);
+  color: #842029;
+  border-color: rgba(220, 53, 69, 0.3);
+}
+.status-notworking::before { background: #ef4444; }
+.status-repair {
+  background: var(--warning-bg);
+  color: #664d03;
+  border-color: rgba(253, 126, 20, 0.3);
+}
+.status-repair::before { background: #f59e0b; }
+.status-retired {
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+.status-retired::before { background: #3b82f6; }
+.status-disposed {
+  background: var(--slate-100);
+  color: var(--slate-700);
+  border-color: rgba(100, 116, 139, 0.3);
+}
+.status-disposed::before { background: var(--slate-500); }
+
+/* FOOTER */
+.footer-info {
+  padding: 12px 20px;
+  background: var(--slate-50);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-info .count {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px !important;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.empty-state-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+/* ==================== CHART PANEL ==================== */
+.chart-panel {
+  padding: 20px;
+  overflow-y: auto;
+}
+.chart-panel::-webkit-scrollbar { width: 8px; }
+.chart-panel::-webkit-scrollbar-thumb {
+  background: var(--slate-300);
+  border-radius: 4px;
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+.panel-header-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.panel-header h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.panel-header p {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.chart-container {
+  position: relative;
+  height: 220px;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+.chart-center-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+.chart-center-text .num {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.chart-center-text .lbl {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* STAT GRID */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.stat-card {
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: all 0.15s;
+  border-left-width: 3px;
+}
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.stat-card-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.stat-card-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.stat-card.total { border-left-color: var(--primary); }
+.stat-card.total .stat-card-value { color: var(--primary); }
+.stat-card.working { border-left-color: #10b981; }
+.stat-card.working .stat-card-value { color: #059669; }
+.stat-card.notworking { border-left-color: #ef4444; }
+.stat-card.notworking .stat-card-value { color: #dc2626; }
+.stat-card.repair { border-left-color: #f59e0b; }
+.stat-card.repair .stat-card-value { color: #d97706; }
+
+/* ==================== MODAL ==================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: fadeIn 0.15s;
+}
+.modal-overlay.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 720px;
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.2s ease-out;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);
+}
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.modal-header {
+  padding: 18px 24px;
+  background: var(--primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+.close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  font-size: 14px;
+}
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+.modal-body::-webkit-scrollbar { width: 8px; }
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--slate-300);
+  border-radius: 4px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full-width { grid-column: span 2; }
+.form-group label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: #ffffff;
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+}
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+  padding-right: 34px;
+}
+.form-group textarea { resize: vertical; min-height: 60px; }
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+.form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+.modal-footer {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--slate-50);
+  border-top: 1px solid var(--border);
+}
+
+/* ==================== TOAST ==================== */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast {
+  background: #ffffff;
+  color: var(--text-primary);
+  padding: 14px 18px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 260px;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: toastIn 0.3s ease-out forwards;
+}
+@keyframes toastIn {
+  to { transform: translateX(0); opacity: 1; }
+}
+.toast.success { border-left-color: var(--success); }
+.toast.error { border-left-color: var(--danger); }
+.toast.warning { border-left-color: var(--warning); }
+.toast.info { border-left-color: var(--info); }
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.toast.success .toast-icon { background: var(--success-bg); color: #0f5132; }
+.toast.error .toast-icon { background: var(--danger-bg); color: #842029; }
+.toast.warning .toast-icon { background: var(--warning-bg); color: #664d03; }
+.toast.info .toast-icon { background: var(--info-bg); color: #055160; }
+.toast-icon svg { width: 14px; height: 14px; }
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1100px) {
+  .main { grid-template-columns: 1fr; padding: 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full-width { grid-column: span 1; }
+  .header { padding: 0 16px; }
+  .toolbar { padding: 12px 16px; }
+  .search-wrap { margin-left: 0; width: 100%; }
+  .search-wrap input { width: 100%; }
+}
+@media (max-width: 640px) {
+  .title-block h1 { font-size: 13px; }
+  .title-block p { font-size: 9px; }
+  .status-indicator span:last-child { display: none; }
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* ==================== PRINT ==================== */
+@media print {
+  .toolbar, .modal-overlay, .toast-container { display: none !important; }
+  .header { box-shadow: none; }
+  .main { grid-template-columns: 1fr; }
+  body { background: #ffffff; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <div class="title-block">
+        <h1>IT Asset Management System</h1>
+        <p>Enterprise Edition</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-indicator">
+        <span class="dot"></span>
+        <span>System Online</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="openAddDialog()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add Asset
+    </button>
+    <button class="btn" onclick="editSelected()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      Edit
+    </button>
+    <button class="btn btn-danger" onclick="deleteSelected()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+      Delete
+    </button>
+    <button class="btn btn-success" onclick="document.getElementById('importFile').click()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Import Excel
+    </button>
+    <button class="btn" onclick="exportExcel()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      Export Excel
+    </button>
+    <button class="btn" onclick="clearAll()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+      Clear All
+    </button>
+    <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search assets..." oninput="renderTable()">
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TABLE CARD -->
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:48px;">#</th>
+              <th>Asset Tag</th>
+              <th>Asset Name</th>
+              <th>Type</th>
+              <th>Brand</th>
+              <th>Model</th>
+              <th>Serial No</th>
+              <th>Assigned To</th>
+              <th>Department</th>
+              <th>Location</th>
+              <th>Purchase Date</th>
+              <th>Warranty</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="footer-info">
+        <span>Total Records: <span class="count" id="recordCount">0</span></span>
+        <span>Double-click any row to edit</span>
+      </div>
+    </div>
+
+    <!-- CHART CARD -->
+    <div class="card chart-panel">
+      <div class="panel-header">
+        <div class="panel-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+            <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Asset Status Distribution</h3>
+          <p>Real-time overview</p>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="statusChart"></canvas>
+        <div class="chart-center-text">
+          <div class="num" id="chartTotal">0</div>
+          <div class="lbl">Total Assets</div>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="statsGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add New Asset</h2>
+      <button class="close-btn" onclick="closeDialog()" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="assetForm" onsubmit="event.preventDefault(); saveAsset();">
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+          <div class="form-group"><label>Asset Tag *</label><input type="text" id="asset_tag" required></div>
+          <div class="form-group"><label>Asset Name</label><input type="text" id="asset_name"></div>
+          <div class="form-group"><label>Asset Type</label><input type="text" id="asset_type" placeholder="Laptop / Desktop / Printer"></div>
+          <div class="form-group"><label>Brand</label><input type="text" id="brand"></div>
+          <div class="form-group"><label>Model</label><input type="text" id="model"></div>
+          <div class="form-group"><label>Serial Number</label><input type="text" id="serial_number"></div>
+          <div class="form-group"><label>Assigned To</label><input type="text" id="assigned_to"></div>
+          <div class="form-group"><label>Department</label><input type="text" id="department"></div>
+          <div class="form-group"><label>Location</label><input type="text" id="location"></div>
+          <div class="form-group"><label>Purchase Date</label><input type="date" id="purchase_date"></div>
+          <div class="form-group"><label>Warranty Expiry</label><input type="date" id="warranty_expiry"></div>
+          <div class="form-group">
+            <label>Status *</label>
+            <select id="status">
+              <option value="Working">Working</option>
+              <option value="Not Working">Not Working</option>
+              <option value="Under Repair">Under Repair</option>
+              <option value="Retired">Retired</option>
+              <option value="Disposed">Disposed</option>
+            </select>
+          </div>
+          <div class="form-group full-width"><label>Remarks</label><textarea id="remarks" rows="2"></textarea></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeDialog()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAsset()">Save Asset</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ============================================================
+// IT ASSET MANAGEMENT SYSTEM - PROFESSIONAL EDITION
+// ============================================================
+const STORAGE_KEY = "it_assets_data";
+let assets = [];
+let selectedRowId = null;
+let chartInstance = null;
+
+const EXCEL_HEADERS = [
+  "Asset Tag","Asset Name","Asset Type","Brand","Model",
+  "Serial Number","Assigned To","Department","Location",
+  "Purchase Date","Warranty Expiry","Status","Remarks"
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadFromStorage();
+  renderTable();
+  renderChart();
+  bindRowEvents();
+  document.getElementById("assetForm").addEventListener("submit", e => {
+    e.preventDefault();
+    saveAsset();
+  });
+  // Esc to close modal
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeDialog();
+  });
+});
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      assets = JSON.parse(raw);
+    } else {
+      assets = [
+        { id: 1, asset_tag: "IT-001", asset_name: "Dell Laptop", asset_type: "Laptop",
+          brand: "Dell", model: "Latitude 5420", serial_number: "SN12345",
+          assigned_to: "Ramesh Kumar", department: "IT", location: "Chennai HQ",
+          purchase_date: "2024-01-15", warranty_expiry: "2027-01-15",
+          status: "Working", remarks: "" },
+        { id: 2, asset_tag: "IT-002", asset_name: "HP LaserJet Printer", asset_type: "Printer",
+          brand: "HP", model: "LaserJet Pro M404", serial_number: "SN67890",
+          assigned_to: "Suresh Patel", department: "Administration", location: "Bangalore",
+          purchase_date: "2023-06-10", warranty_expiry: "2025-06-10",
+          status: "Not Working", remarks: "Paper jam, needs service" },
+        { id: 3, asset_tag: "IT-003", asset_name: "Lenovo Desktop", asset_type: "Desktop",
+          brand: "Lenovo", model: "ThinkCentre M70", serial_number: "SN11111",
+          assigned_to: "Karthik R", department: "Finance", location: "Mumbai",
+          purchase_date: "2023-09-20", warranty_expiry: "2026-09-20",
+          status: "Working", remarks: "" },
+        { id: 4, asset_tag: "IT-004", asset_name: "Cisco Router", asset_type: "Network Equipment",
+          brand: "Cisco", model: "RV340", serial_number: "SN22222",
+          assigned_to: "Network Team", department: "IT", location: "Server Room",
+          purchase_date: "2023-03-05", warranty_expiry: "2026-03-05",
+          status: "Under Repair", remarks: "Firmware update scheduled" },
+      ];
+      saveToStorage();
+    }
+  } catch (e) {
+    console.error(e);
+    assets = [];
+  }
+}
+
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(assets));
+}
+
+function renderTable() {
+  const tbody = document.getElementById("tableBody");
+  const search = document.getElementById("searchInput").value.toLowerCase().trim();
+  tbody.innerHTML = "";
+
+  const filtered = assets.filter(a => {
+    if (!search) return true;
+    return Object.values(a).some(v => String(v).toLowerCase().includes(search));
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="14" class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      <div>${search ? "No matching assets found" : "No assets recorded. Click Add Asset to begin."}</div>
+    </td></tr>`;
+    document.getElementById("recordCount").textContent = "0";
+    return;
+  }
+
+  filtered.forEach((a, i) => {
+    const tr = document.createElement("tr");
+    const sc = getStatusClass(a.status);
+    tr.className = `status-${sc}`;
+    tr.dataset.id = a.id;
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td><b>${escapeHtml(a.asset_tag)}</b></td>
+      <td>${escapeHtml(a.asset_name)}</td>
+      <td>${escapeHtml(a.asset_type)}</td>
+      <td>${escapeHtml(a.brand)}</td>
+      <td>${escapeHtml(a.model)}</td>
+      <td>${escapeHtml(a.serial_number)}</td>
+      <td>${escapeHtml(a.assigned_to)}</td>
+      <td>${escapeHtml(a.department)}</td>
+      <td>${escapeHtml(a.location)}</td>
+      <td>${escapeHtml(a.purchase_date)}</td>
+      <td>${escapeHtml(a.warranty_expiry)}</td>
+      <td><span class="status-badge status-${sc}">${escapeHtml(a.status)}</span></td>
+      <td>${escapeHtml(a.remarks)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("recordCount").textContent = filtered.length;
+}
+
+function getStatusClass(status) {
+  const s = (status || "").toLowerCase().trim();
+  if (s === "working") return "working";
+  if (s === "not working") return "notworking";
+  if (s === "under repair" || s === "repair") return "repair";
+  if (s === "retired") return "retired";
+  if (s === "disposed") return "disposed";
+  return "working";
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function bindRowEvents() {
+  const tbody = document.getElementById("tableBody");
+  tbody.addEventListener("click", e => {
+    const tr = e.target.closest("tr");
+    if (!tr || !tr.dataset.id) return;
+    document.querySelectorAll("#tableBody tr").forEach(r => r.classList.remove("selected"));
+    tr.classList.add("selected");
+    selectedRowId = parseInt(tr.dataset.id);
+  });
+  tbody.addEventListener("dblclick", e => {
+    const tr = e.target.closest("tr");
+    if (!tr || !tr.dataset.id) return;
+    selectedRowId = parseInt(tr.dataset.id);
+    editSelected();
+  });
+}
+
+// ==================== CHART ====================
+function renderChart() {
+  const counts = { "Working": 0, "Not Working": 0, "Under Repair": 0, "Retired": 0, "Disposed": 0 };
+  assets.forEach(a => {
+    const s = (a.status || "").trim();
+    if (counts[s] !== undefined) counts[s]++;
+  });
+
+  const labels = Object.keys(counts).filter(k => counts[k] > 0);
+  const values = labels.map(k => counts[k]);
+  const colorMap = {
+    "Working": "#10b981",
+    "Not Working": "#ef4444",
+    "Under Repair": "#f59e0b",
+    "Retired": "#3b82f6",
+    "Disposed": "#94a3b8"
+  };
+  const colors = labels.map(k => colorMap[k]);
+  const ctx = document.getElementById("statusChart").getContext("2d");
+
+  if (chartInstance) chartInstance.destroy();
+
+  document.getElementById("chartTotal").textContent = assets.length;
+
+  if (labels.length === 0) {
+    ctx.clearRect(0, 0, 400, 400);
+  } else {
+    chartInstance = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: labels.map((l, i) => `${l} (${values[i]})`),
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderColor: "#ffffff",
+          borderWidth: 3,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "68%",
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: "#475569",
+              font: { size: 11, weight: "600", family: "Inter" },
+              padding: 10,
+              usePointStyle: true,
+              pointStyle: "circle",
+              boxWidth: 8,
+              boxHeight: 8
+            }
+          },
+          tooltip: {
+            backgroundColor: "#0f172a",
+            titleColor: "#ffffff",
+            bodyColor: "#e2e8f0",
+            borderColor: "#334155",
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 6,
+            titleFont: { size: 12, weight: "700", family: "Inter" },
+            bodyFont: { size: 12, weight: "500", family: "Inter" },
+            displayColors: true,
+            boxPadding: 6
+          }
+        },
+        animation: {
+          animateRotate: true,
+          animateScale: true,
+          duration: 700,
+          easing: "easeOutQuart"
+        }
+      }
+    });
+  }
+
+  const total = assets.length;
+  document.getElementById("statsGrid").innerHTML = `
+    <div class="stat-card total">
+      <div class="stat-card-label">Total Assets</div>
+      <div class="stat-card-value">${total}</div>
+    </div>
+    <div class="stat-card working">
+      <div class="stat-card-label">Working</div>
+      <div class="stat-card-value">${counts["Working"]}</div>
+    </div>
+    <div class="stat-card notworking">
+      <div class="stat-card-label">Not Working</div>
+      <div class="stat-card-value">${counts["Not Working"]}</div>
+    </div>
+    <div class="stat-card repair">
+      <div class="stat-card-label">Under Repair</div>
+      <div class="stat-card-value">${counts["Under Repair"]}</div>
+    </div>`;
+}
+
+// ==================== MODAL ====================
+function openAddDialog() {
+  document.getElementById("modalTitle").textContent = "Add New Asset";
+  document.getElementById("assetForm").reset();
+  document.getElementById("editId").value = "";
+  document.getElementById("status").value = "Working";
+  document.getElementById("modalOverlay").classList.add("active");
+  setTimeout(() => document.getElementById("asset_tag").focus(), 100);
+}
+
+function editSelected() {
+  if (!selectedRowId) { showToast("Please select an asset first", "warning"); return; }
+  const asset = assets.find(a => a.id === selectedRowId);
+  if (!asset) return;
+
+  document.getElementById("modalTitle").textContent = "Edit Asset";
+  document.getElementById("editId").value = asset.id;
+  document.getElementById("asset_tag").value = asset.asset_tag || "";
+  document.getElementById("asset_name").value = asset.asset_name || "";
+  document.getElementById("asset_type").value = asset.asset_type || "";
+  document.getElementById("brand").value = asset.brand || "";
+  document.getElementById("model").value = asset.model || "";
+  document.getElementById("serial_number").value = asset.serial_number || "";
+  document.getElementById("assigned_to").value = asset.assigned_to || "";
+  document.getElementById("department").value = asset.department || "";
+  document.getElementById("location").value = asset.location || "";
+  document.getElementById("purchase_date").value = asset.purchase_date || "";
+  document.getElementById("warranty_expiry").value = asset.warranty_expiry || "";
+  document.getElementById("status").value = asset.status || "Working";
+  document.getElementById("remarks").value = asset.remarks || "";
+  document.getElementById("modalOverlay").classList.add("active");
+}
+
+function closeDialog() {
+  document.getElementById("modalOverlay").classList.remove("active");
+}
+
+function saveAsset() {
+  const id = document.getElementById("editId").value;
+  const data = {
+    asset_tag: document.getElementById("asset_tag").value.trim(),
+    asset_name: document.getElementById("asset_name").value.trim(),
+    asset_type: document.getElementById("asset_type").value.trim(),
+    brand: document.getElementById("brand").value.trim(),
+    model: document.getElementById("model").value.trim(),
+    serial_number: document.getElementById("serial_number").value.trim(),
+    assigned_to: document.getElementById("assigned_to").value.trim(),
+    department: document.getElementById("department").value.trim(),
+    location: document.getElementById("location").value.trim(),
+    purchase_date: document.getElementById("purchase_date").value.trim(),
+    warranty_expiry: document.getElementById("warranty_expiry").value.trim(),
+    status: document.getElementById("status").value,
+    remarks: document.getElementById("remarks").value.trim()
+  };
+
+  if (!data.asset_tag) { showToast("Asset Tag is required", "error"); return; }
+
+  if (id) {
+    const idx = assets.findIndex(a => a.id === parseInt(id));
+    if (idx === -1) return;
+    if (assets.some(a => a.id !== parseInt(id) && a.asset_tag.toLowerCase() === data.asset_tag.toLowerCase())) {
+      showToast("Asset Tag already exists", "error"); return;
+    }
+    assets[idx] = { ...assets[idx], ...data };
+    showToast("Asset updated successfully", "success");
+  } else {
+    if (assets.some(a => a.asset_tag.toLowerCase() === data.asset_tag.toLowerCase())) {
+      showToast("Asset Tag already exists", "error"); return;
+    }
+    const newId = assets.length ? Math.max(...assets.map(a => a.id)) + 1 : 1;
+    assets.push({ id: newId, ...data });
+    showToast("Asset added successfully", "success");
+  }
+
+  saveToStorage();
+  closeDialog();
+  renderTable();
+  renderChart();
+  selectedRowId = null;
+}
+
+// ==================== DELETE ====================
+function deleteSelected() {
+  if (!selectedRowId) { showToast("Please select an asset first", "warning"); return; }
+  const asset = assets.find(a => a.id === selectedRowId);
+  if (!asset) return;
+  if (!confirm(`Delete asset "${asset.asset_tag} - ${asset.asset_name}"?\n\nThis action cannot be undone.`)) return;
+
+  assets = assets.filter(a => a.id !== selectedRowId);
+  saveToStorage();
+  selectedRowId = null;
+  renderTable();
+  renderChart();
+  showToast("Asset deleted", "success");
+}
+
+function clearAll() {
+  if (assets.length === 0) { showToast("No data to clear", "warning"); return; }
+  if (!confirm(`Delete ALL ${assets.length} assets?\n\nThis action cannot be undone!`)) return;
+  assets = [];
+  saveToStorage();
+  selectedRowId = null;
+  renderTable();
+  renderChart();
+  showToast("All assets cleared", "success");
+}
+
+// ==================== IMPORT ====================
+function importExcel(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: "array" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+      if (rows.length < 2) { showToast("Excel file is empty", "error"); return; }
+
+      const header = rows[0].map(h => String(h || "").trim().toLowerCase());
+      const colMap = {};
+      EXCEL_HEADERS.forEach((h, i) => {
+        const idx = header.indexOf(h.toLowerCase());
+        if (idx !== -1) colMap[h] = idx;
+      });
+      if (Object.keys(colMap).length < 5) EXCEL_HEADERS.forEach((h, i) => colMap[h] = i);
+
+      let inserted = 0, skipped = 0, updated = 0;
+      const existingTags = new Set(assets.map(a => a.asset_tag.toLowerCase()));
+
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row || row.every(c => c === "" || c === null || c === undefined)) continue;
+
+        const getVal = (hn) => {
+          const idx = colMap[hn];
+          if (idx === undefined || idx >= row.length) return "";
+          const v = row[idx];
+          if (v instanceof Date) return v.toISOString().split("T")[0];
+          return String(v ?? "").trim();
+        };
+
+        const rec = {
+          asset_tag: getVal("Asset Tag"),
+          asset_name: getVal("Asset Name"),
+          asset_type: getVal("Asset Type"),
+          brand: getVal("Brand"),
+          model: getVal("Model"),
+          serial_number: getVal("Serial Number"),
+          assigned_to: getVal("Assigned To"),
+          department: getVal("Department"),
+          location: getVal("Location"),
+          purchase_date: getVal("Purchase Date"),
+          warranty_expiry: getVal("Warranty Expiry"),
+          status: getVal("Status") || "Working",
+          remarks: getVal("Remarks")
+        };
+
+        if (!rec.asset_tag) { skipped++; continue; }
+
+        const key = rec.asset_tag.toLowerCase();
+        if (existingTags.has(key)) {
+          const idx = assets.findIndex(a => a.asset_tag.toLowerCase() === key);
+          if (idx !== -1) { assets[idx] = { ...assets[idx], ...rec }; updated++; }
+        } else {
+          const newId = assets.length ? Math.max(...assets.map(a => a.id)) + 1 : 1;
+          assets.push({ id: newId, ...rec });
+          existingTags.add(key);
+          inserted++;
+        }
+      }
+
+      saveToStorage();
+      renderTable();
+      renderChart();
+      showToast(`Import complete — ${inserted} new, ${updated} updated, ${skipped} skipped`, "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Error reading Excel file: " + err.message, "error");
+    }
+    event.target.value = "";
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ==================== EXPORT ====================
+function exportExcel() {
+  if (assets.length === 0) { showToast("No data to export", "warning"); return; }
+
+  const wsData = [EXCEL_HEADERS];
+  assets.forEach(a => {
+    wsData.push([
+      a.asset_tag, a.asset_name, a.asset_type, a.brand, a.model,
+      a.serial_number, a.assigned_to, a.department, a.location,
+      a.purchase_date, a.warranty_expiry, a.status, a.remarks
+    ]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws["!cols"] = [
+    { wch: 15 }, { wch: 24 }, { wch: 16 }, { wch: 14 }, { wch: 18 },
+    { wch: 18 }, { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 14 },
+    { wch: 14 }, { wch: 14 }, { wch: 28 }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "IT Assets");
+
+  const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+  XLSX.writeFile(wb, `IT_Assets_${ts}.xlsx`);
+  showToast(`Exported ${assets.length} records successfully`, "success");
+}
+
+// ==================== TOAST ====================
+function showToast(msg, type = "info") {
+  const container = document.getElementById("toastContainer");
+  const icons = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/><circle cx="12" cy="12" r="10"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/><circle cx="12" cy="12" r="10"/></svg>'
+  };
+
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <div class="toast-icon">${icons[type] || icons.info}</div>
+    <div>${escapeHtml(msg)}</div>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.transition = "all 0.3s";
+    toast.style.transform = "translateX(400px)";
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 300);
+  }, 3200);
+}
+</script>
+</body>
+</html>
